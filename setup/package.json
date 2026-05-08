@@ -1,0 +1,11 @@
+{
+  "name": "turnos-app-setup",
+  "version": "1.0.0",
+  "description": "Script de inicialización de Firebase para el sistema de turnos",
+  "scripts": {
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}

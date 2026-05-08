@@ -1,0 +1,205 @@
+/* ═══════════════════════════════════════════════════════
+   MIS TURNOS — Área del cliente registrado
+   ═══════════════════════════════════════════════════════ */
+
+.mis-turnos-root {
+  min-height: 100vh;
+  background: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.mt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: var(--color-secondary);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mt-brand { display: flex; align-items: center; gap: 12px; }
+.mt-iniciales {
+  width: 40px; height: 40px;
+  background: var(--color-accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; color: #fff;
+  flex-shrink: 0;
+}
+.mt-empresa { font-weight: 600; font-size: 15px; color: var(--color-text); }
+.mt-bienvenida { font-size: 12px; color: var(--color-text-muted); }
+.mt-header-actions { display: flex; align-items: center; gap: 10px; }
+
+.mt-btn-nuevo {
+  background: var(--color-accent);
+  border: none; color: #fff;
+  padding: 9px 18px;
+  border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+  font-family: var(--font-body);
+}
+.mt-btn-nuevo:hover { filter: brightness(1.1); }
+
+.mt-btn-logout {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--color-text-muted);
+  padding: 8px 14px; border-radius: 8px;
+  font-size: 13px; cursor: pointer; transition: all .2s;
+  font-family: var(--font-body);
+}
+.mt-btn-logout:hover { border-color: #ef4444; color: #ef4444; }
+
+.mt-main { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+
+.mt-filtros { display: flex; gap: 8px; }
+.mt-filtro-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--color-text-muted);
+  padding: 8px 18px; border-radius: 20px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all .2s; font-family: var(--font-body);
+}
+.mt-filtro-btn:hover { border-color: rgba(0,0,0,.2); color: var(--color-text); }
+.mt-filtro-btn.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+.mt-msg {
+  padding: 12px 16px; border-radius: 9px;
+  font-size: 14px; display: flex; align-items: center; justify-content: space-between;
+}
+.mt-msg.ok    { background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.3); color: #059669; }
+.mt-msg.error { background: rgba(239,68,68,.12);  border: 1px solid rgba(239,68,68,.3);  color: #ef4444; }
+
+.mt-loading { color: var(--color-text-muted); font-size: 14px; padding: 40px 0; text-align: center; }
+
+.mt-vacio {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 12px;
+  padding: 60px 0; color: var(--color-text-muted); text-align: center;
+}
+.mt-vacio-icono { font-size: 48px; }
+
+.mt-lista { display: flex; flex-direction: column; gap: 10px; }
+
+.mt-card {
+  background: var(--color-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.mt-card:hover { border-color: rgba(0,0,0,.2); }
+.mt-card.cancelado { opacity: .55; }
+.mt-card.pasado    { opacity: .7; }
+
+.mt-card-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px;
+}
+.mt-card-fecha {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  width: 50px; height: 50px;
+  background: var(--surface);
+  border-radius: 10px; flex-shrink: 0;
+}
+.mt-fecha-dia  { font-size: 20px; font-weight: 700; line-height: 1; color: var(--color-text); }
+.mt-fecha-mes  { font-size: 11px; color: var(--color-text-muted); text-transform: uppercase; }
+.mt-card-body  { flex: 1; min-width: 0; }
+.mt-card-servicio { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mt-card-meta  { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--color-text-muted); margin-top: 4px; }
+.mt-card-estado { flex-shrink: 0; }
+
+.mt-estado-badge {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+
+.mt-motivo {
+  padding: 8px 18px;
+  font-size: 12px; color: var(--color-text-muted);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+
+.mt-card-footer {
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end;
+}
+
+.mt-btn-cancelar {
+  background: transparent;
+  border: 1px solid rgba(239,68,68,.4);
+  color: #ef4444;
+  padding: 7px 16px; border-radius: 7px;
+  font-size: 13px; cursor: pointer;
+  transition: all .2s; font-family: var(--font-body);
+}
+.mt-btn-cancelar:hover { background: rgba(239,68,68,.1); border-color: #ef4444; }
+
+/* reusar modal y admin-btn de admin.css */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; backdrop-filter: blur(4px); padding: 20px;
+}
+.modal-content {
+  background: var(--color-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px;
+  width: 100%; max-width: 460px; position: relative;
+  animation: modalIn .2s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,.12);
+}
+@keyframes modalIn { from { transform: scale(.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--color-text-muted); width: 30px; height: 30px;
+  border-radius: 50%; cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-titulo { font-family: var(--font-display); font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+.modal-acciones { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+.admin-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--color-text);
+  padding: 10px 18px; border-radius: 8px;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  transition: all .2s; font-family: var(--font-body);
+}
+.admin-btn.danger { border-color: #ef4444; color: #ef4444; }
+.admin-btn.danger:hover { background: rgba(239,68,68,.1); }
+
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width: 600px) {
+  .mt-header { padding: 14px 16px; }
+  .mt-main { padding: 16px; gap: 12px; }
+  .mt-card-header { padding: 12px 14px; gap: 10px; }
+  .mt-card-fecha { width: 44px; height: 44px; }
+  .mt-fecha-dia { font-size: 18px; }
+  .mt-card-servicio { font-size: 14px; }
+  .mt-btn-nuevo { padding: 8px 14px; font-size: 13px; }
+  .mt-btn-logout { padding: 7px 10px; font-size: 12px; }
+}
+
+@media (max-width: 400px) {
+  .mt-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .mt-header-actions { align-self: flex-end; }
+  .mt-filtros { flex-wrap: wrap; }
+  .mt-filtro-btn { flex: 1; text-align: center; padding: 8px 10px; }
+}

@@ -1,0 +1,97 @@
+/* ═══════════════════════════════════════════════════════
+   ESTILOS GLOBALES — Sistema de Turnos
+   Los colores vienen de config.js a través de CSS variables
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-primary: #000000;
+  --color-secondary: #16213e;
+  --color-accent: #e94560;
+  --color-accent2: #0f3460;
+  --color-text: #eaeaea;
+  --color-text-muted: #9ca3af;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --border-radius: 12px;
+
+  --surface: rgba(0,0,0,0.04);
+  --surface-hover: rgba(0,0,0,0.07);
+  --border: rgba(0,0,0,0.1);
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--color-primary);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-root {
+  min-height: 100vh;
+  background: var(--color-primary);
+}
+
+/* ─── Spinner ─────────────────────────────────────── */
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Form base ───────────────────────────────────── */
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.form-label .requerido {
+  color: var(--color-accent);
+  margin-left: 3px;
+}
+.form-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  transition: border-color .2s, background .2s;
+  outline: none;
+  resize: vertical;
+}
+.form-input:focus {
+  border-color: var(--color-accent);
+  background: var(--surface-hover);
+}
+.form-input::placeholder { color: var(--color-text-muted); }
+
+.error-msg {
+  background: rgba(239, 68, 68, .15);
+  border: 1px solid rgba(239, 68, 68, .4);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin: 8px 0;
+}

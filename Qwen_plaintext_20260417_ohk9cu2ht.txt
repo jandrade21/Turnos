@@ -1,0 +1,8 @@
+# Variables de entorno para EmailJS
+VITE_EMAILJS_SERVICE_ID=service_XXXXXXX
+VITE_EMAILJS_TEMPLATE_ID=template_XXXX
+VITE_EMAILJS_PUBLIC_KEY=XXXXXXXXXXXXXXXX
+
+# Otras variables de entorno (si las necesitas)
+VITE_API_URL=https://api.ejemplo.com
+VITE_APP_NAME=Mi Aplicación

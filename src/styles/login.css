@@ -1,0 +1,126 @@
+/* ═══════════════════════════════════════════════════════
+   LOGIN — Estilos del login de administrador
+   ═══════════════════════════════════════════════════════ */
+
+.login-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-root::before {
+  content: "";
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(233,69,96,.15) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  pointer-events: none;
+}
+
+.login-card {
+  background: var(--color-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%; max-width: 420px;
+  animation: fadeIn .4s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+.login-brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.login-iniciales {
+  width: 64px; height: 64px;
+  background: var(--color-accent);
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700; color: #fff;
+  margin-bottom: 16px;
+  box-shadow: 0 0 30px rgba(233,69,96,.3);
+}
+.login-nombre {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 600;
+  margin-bottom: 6px;
+}
+.login-sub {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.btn-login {
+  background: var(--color-accent);
+  border: none;
+  color: #fff;
+  padding: 14px;
+  border-radius: var(--border-radius);
+  font-size: 16px; font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: var(--font-body);
+  margin-top: 8px;
+}
+.btn-login:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-login:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+.btn-volver-cliente {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 8px;
+  transition: color .2s;
+  font-family: var(--font-body);
+}
+.btn-volver-cliente:hover { color: var(--color-text); }
+
+/* ═══ AUTH CLIENTE — tabs ══════════════════════════════════ */
+.auth-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.auth-tab {
+  flex: 1; background: transparent; border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-muted);
+  padding: 12px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all .2s;
+  font-family: var(--font-body);
+}
+.auth-tab:hover { color: var(--color-text); }
+.auth-tab.active { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+
+.success-msg {
+  background: rgba(16,185,129,.12);
+  border: 1px solid rgba(16,185,129,.3);
+  color: #059669;
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 13px; margin: 6px 0;
+}
+.btn-link {
+  background: none; border: none;
+  color: var(--color-text-muted); font-size: 13px;
+  cursor: pointer; padding: 6px; text-align: center;
+  font-family: var(--font-body); transition: color .2s;
+}
+.btn-link:hover { color: var(--color-accent); }
