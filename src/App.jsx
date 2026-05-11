@@ -49,7 +49,7 @@ export default function App() {
 
   useEffect(() => {
     injectarTema(EMPRESA.tema);
-    document.title = EMPRESA.nombre;
+    document.title = "Turnos Ya";
     const handler = () => setPage(getPage());
     window.addEventListener("hashchange", handler);
 

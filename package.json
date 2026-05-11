@@ -1,8 +1,8 @@
 {
-  "name": "turnos-app",
+  "name": "turnos-ya",
   "version": "1.0.0",
   "private": true,
-  "description": "Sistema de turnos autoasistido reutilizable",
+  "description": "Sistema de reservas online para Peluquería Nova",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

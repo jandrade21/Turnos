@@ -13,10 +13,10 @@
 
 export const EMPRESA = {
   // ─── Identidad ────────────────────────────────────────────
-  nombre: "Peluquería Nova",
+  nombre: "Turnos Ya",
   slogan: "Tu mejor versión, cada día",
   logo: null, // URL de imagen o null para usar las iniciales
-  iniciales: "PN", // Se muestra si no hay logo
+  iniciales: "TY", // Se muestra si no hay logo
 
   // ─── Tema visual ──────────────────────────────────────────
   tema: {
