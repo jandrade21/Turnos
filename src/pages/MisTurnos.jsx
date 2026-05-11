@@ -25,12 +25,23 @@ export default function MisTurnos() {
   const { empresa, user, navigate } = useApp();
   const [turnos,   setTurnos]   = useState([]);
   const [loading,  setLoading]  = useState(true);
-  const [filtro,   setFiltro]   = useState("proximos"); // proximos | pasados | todos
+  const [filtro,   setFiltro]   = useState("proximos");
   const [pagina,   setPagina]   = useState(1);
-  const [modal,    setModal]    = useState(null); // turno seleccionado para cancelar
+  const [modal,    setModal]    = useState(null);
   const [motivo,   setMotivo]   = useState("");
   const [cancelando, setCancelando] = useState(false);
   const [msg,      setMsg]      = useState("");
+  const [nombreCliente, setNombreCliente] = useState(user?.displayName || "");
+
+  // ── Estado del perfil ──────────────────────────────
+  const [perfilForm,    setPerfilForm]    = useState({ nombre: "", telefono: "" });
+  const [perfilGuardando, setPerfilGuardando] = useState(false);
+  const [perfilMsg,    setPerfilMsg]      = useState(null); // { tipo: "ok"|"error", texto }
+
+  // ── Estado de cambio de contraseña ─────────────────
+  const [passForm,     setPassForm]      = useState({ actual: "", nueva: "", confirmar: "" });
+  const [passGuardando, setPassGuardando] = useState(false);
+  const [passMsg,      setPassMsg]       = useState(null);
 
   const hoy = hoyISO();
   const POR_PAGINA = 10;
@@ -38,6 +49,16 @@ export default function MisTurnos() {
   useEffect(() => {
     if (!user) return;
     cargar();
+    authService.obtenerPerfil(user.uid)
+      .then(perfil => {
+        const nombre = perfil?.nombre || user.displayName || "";
+        if (nombre) setNombreCliente(nombre);
+        setPerfilForm({
+          nombre:   perfil?.nombre    || user.displayName || "",
+          telefono: perfil?.telefono  || "",
+        });
+      })
+      .catch(() => {});
   }, [user]);
 
   useEffect(() => { setPagina(1); }, [filtro]);
@@ -92,6 +113,55 @@ export default function MisTurnos() {
     setMotivo("");
   }
 
+  async function guardarPerfil() {
+    if (!perfilForm.nombre.trim()) {
+      setPerfilMsg({ tipo: "error", texto: "El nombre no puede estar vacío." });
+      return;
+    }
+    setPerfilGuardando(true);
+    setPerfilMsg(null);
+    try {
+      await authService.actualizarPerfil(user.uid, {
+        nombre: perfilForm.nombre.trim(),
+        telefono: perfilForm.telefono.trim(),
+      });
+      setNombreCliente(perfilForm.nombre.trim());
+      setPerfilMsg({ tipo: "ok", texto: "Datos guardados correctamente." });
+    } catch (e) {
+      setPerfilMsg({ tipo: "error", texto: "No se pudo guardar. Intentá de nuevo." });
+    }
+    setPerfilGuardando(false);
+  }
+
+  async function cambiarPassword(e) {
+    e.preventDefault();
+    if (!passForm.actual || !passForm.nueva || !passForm.confirmar) {
+      setPassMsg({ tipo: "error", texto: "Completá todos los campos." });
+      return;
+    }
+    if (passForm.nueva.length < 6) {
+      setPassMsg({ tipo: "error", texto: "La nueva contraseña debe tener al menos 6 caracteres." });
+      return;
+    }
+    if (passForm.nueva !== passForm.confirmar) {
+      setPassMsg({ tipo: "error", texto: "La nueva contraseña y su confirmación no coinciden." });
+      return;
+    }
+    setPassGuardando(true);
+    setPassMsg(null);
+    try {
+      await authService.cambiarPassword(passForm.actual, passForm.nueva);
+      setPassMsg({ tipo: "ok", texto: "Contraseña actualizada correctamente." });
+      setPassForm({ actual: "", nueva: "", confirmar: "" });
+    } catch (e) {
+      const msg = e.code === "auth/wrong-password" || e.code === "auth/invalid-credential"
+        ? "La contraseña actual es incorrecta."
+        : "No se pudo cambiar la contraseña. Intentá de nuevo.";
+      setPassMsg({ tipo: "error", texto: msg });
+    }
+    setPassGuardando(false);
+  }
+
   async function logout() {
     await authService.logout();
     navigate("booking");
@@ -105,11 +175,15 @@ export default function MisTurnos() {
           <div className="mt-iniciales">{empresa.iniciales}</div>
           <div>
             <div className="mt-empresa">{empresa.nombre}</div>
-            <div className="mt-bienvenida">Hola, {user?.displayName || user?.email}</div>
+            <div className="mt-bienvenida">Hola, {nombreCliente || user?.email}</div>
           </div>
         </div>
         <div className="mt-header-actions">
           <button className="mt-btn-nuevo" onClick={() => navigate("booking")}>+ Nuevo turno</button>
+          <button
+            className={`mt-btn-logout ${filtro === "perfil" ? "active" : ""}`}
+            onClick={() => setFiltro(f => f === "perfil" ? "proximos" : "perfil")}
+          >Mis Datos</button>
           <button className="mt-btn-logout" onClick={logout}>Salir</button>
         </div>
       </header>
@@ -125,11 +199,142 @@ export default function MisTurnos() {
             <button
               key={f.id}
               className={`mt-filtro-btn ${filtro === f.id ? "active" : ""}`}
-              onClick={() => setFiltro(f.id)}
+              onClick={() => { setFiltro(f.id); setMsg(""); }}
             >{f.label}</button>
           ))}
         </div>
 
+        {/* ── SECCIÓN MIS DATOS ─────────────────────── */}
+        {filtro === "perfil" && (
+          <div className="mt-perfil-root">
+
+            {/* Avatar */}
+            <div className="mt-perfil-avatar">
+              <div className="mt-perfil-iniciales">
+                {(perfilForm.nombre || user?.email || "?").charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div className="mt-perfil-nombre-display">{perfilForm.nombre || user?.email}</div>
+                <div className="mt-perfil-email-display">{user?.email}</div>
+              </div>
+            </div>
+
+            {/* Datos personales */}
+            <div className="mt-perfil-card">
+              <div className="mt-perfil-card-titulo">Datos personales</div>
+
+              <div className="form-grupo">
+                <label className="form-label">Nombre completo</label>
+                <input
+                  className="form-input"
+                  type="text"
+                  value={perfilForm.nombre}
+                  onChange={e => setPerfilForm(f => ({ ...f, nombre: e.target.value }))}
+                  placeholder="Tu nombre completo"
+                />
+              </div>
+
+              <div className="form-grupo">
+                <label className="form-label">Email <span style={{ fontSize:10, color:"var(--color-text-muted)", textTransform:"none", fontWeight:400 }}>— no editable</span></label>
+                <input
+                  className="form-input"
+                  type="email"
+                  value={user?.email || ""}
+                  readOnly
+                  style={{ opacity: 0.6, cursor: "default" }}
+                />
+              </div>
+
+              <div className="form-grupo">
+                <label className="form-label">Teléfono / WhatsApp</label>
+                <input
+                  className="form-input"
+                  type="tel"
+                  value={perfilForm.telefono}
+                  onChange={e => setPerfilForm(f => ({ ...f, telefono: e.target.value }))}
+                  placeholder="+54 11 1234-5678"
+                />
+              </div>
+
+              {perfilMsg && (
+                <div className={`mt-msg ${perfilMsg.tipo === "ok" ? "ok" : "error"}`} style={{ marginBottom: 12 }}>
+                  {perfilMsg.texto}
+                </div>
+              )}
+
+              <button
+                className="mt-btn-nuevo"
+                onClick={guardarPerfil}
+                disabled={perfilGuardando}
+                style={{ width: "100%" }}
+              >
+                {perfilGuardando ? "Guardando..." : "Guardar datos"}
+              </button>
+            </div>
+
+            {/* Cambiar contraseña */}
+            <div className="mt-perfil-card">
+              <div className="mt-perfil-card-titulo">Cambiar contraseña</div>
+
+              <form onSubmit={cambiarPassword}>
+                <div className="form-grupo">
+                  <label className="form-label">Contraseña actual</label>
+                  <input
+                    className="form-input"
+                    type="password"
+                    value={passForm.actual}
+                    onChange={e => setPassForm(f => ({ ...f, actual: e.target.value }))}
+                    placeholder="Tu contraseña actual"
+                    autoComplete="current-password"
+                  />
+                </div>
+
+                <div className="form-grupo">
+                  <label className="form-label">Nueva contraseña</label>
+                  <input
+                    className="form-input"
+                    type="password"
+                    value={passForm.nueva}
+                    onChange={e => setPassForm(f => ({ ...f, nueva: e.target.value }))}
+                    placeholder="Mínimo 6 caracteres"
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                <div className="form-grupo">
+                  <label className="form-label">Confirmar nueva contraseña</label>
+                  <input
+                    className="form-input"
+                    type="password"
+                    value={passForm.confirmar}
+                    onChange={e => setPassForm(f => ({ ...f, confirmar: e.target.value }))}
+                    placeholder="Repetí la nueva contraseña"
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                {passMsg && (
+                  <div className={`mt-msg ${passMsg.tipo === "ok" ? "ok" : "error"}`} style={{ marginBottom: 12 }}>
+                    {passMsg.texto}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="mt-btn-nuevo"
+                  disabled={passGuardando}
+                  style={{ width: "100%", background: "var(--color-accent2)" }}
+                >
+                  {passGuardando ? "Actualizando..." : "Cambiar contraseña"}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── LISTA DE TURNOS ──────────────────────────── */}
+        {filtro !== "perfil" && (
+          <>
         {msg && (
           <div className={`mt-msg ${msg.includes("Error") || msg.includes("No podés") ? "error" : "ok"}`}>
             {msg}
@@ -210,6 +415,8 @@ export default function MisTurnos() {
               </div>
             )}
           </div>
+        )}
+          </>
         )}
       </main>
 

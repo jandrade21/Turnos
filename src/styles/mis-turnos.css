@@ -53,6 +53,11 @@
   font-family: var(--font-body);
 }
 .mt-btn-logout:hover { border-color: #ef4444; color: #ef4444; }
+.mt-btn-logout.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
 
 .mt-main { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 
@@ -184,6 +189,65 @@
 }
 .admin-btn.danger { border-color: #ef4444; color: #ef4444; }
 .admin-btn.danger:hover { background: rgba(239,68,68,.1); }
+
+/* ─── Mis Datos / Perfil ──────────────────────────── */
+.mt-perfil-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mt-perfil-avatar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--color-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.mt-perfil-iniciales {
+  width: 52px; height: 52px;
+  background: var(--color-accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+
+.mt-perfil-nombre-display {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.mt-perfil-email-display {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.mt-perfil-card {
+  background: var(--color-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mt-perfil-card-titulo {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
 
 /* ─── Responsive ─────────────────────────────────── */
 @media (max-width: 600px) {

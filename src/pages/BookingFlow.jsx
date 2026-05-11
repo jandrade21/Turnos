@@ -212,7 +212,23 @@ function StepFechaHora({ servicio, profesional, fechaSeleccionada, horaSeleccion
         turnosFiltrados,
         bloqueos
       );
-      setSlots(generados);
+
+      // Bloquear slots pasados cuando el día seleccionado es hoy
+      const esHoy = fechaISO === hoyISO();
+      const slotsFinal = esHoy
+        ? (() => {
+            const ahora = new Date();
+            const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+            return generados.map(slot => {
+              const [h, m] = slot.hora.split(":").map(Number);
+              return (h * 60 + m) <= minAhora
+                ? { ...slot, disponible: false }
+                : slot;
+            });
+          })()
+        : generados;
+
+      setSlots(slotsFinal);
     } catch (e) {
       console.error(e);
       setSlots([]);
@@ -314,7 +330,7 @@ function StepFechaHora({ servicio, profesional, fechaSeleccionada, horaSeleccion
 // ─── Step 4: Datos del cliente ────────────────────────────
 function StepDatos({ datos, onChange, camposExtra, isClient }) {
   const campos = [
-    { id: "nombre", label: "Nombre completo", tipo: "text", requerido: true, placeholder: "Juan Pérez" },
+    { id: "nombre", label: "Nombre completo", tipo: "text", requerido: true, placeholder: "Juan Pérez", readOnly: isClient },
     { id: "email", label: "Email", tipo: "email", requerido: true, placeholder: "juan@email.com", readOnly: isClient },
     { id: "telefono", label: "Teléfono / WhatsApp", tipo: "tel", requerido: false, placeholder: "+54 11 1234-5678" },
     { id: "notas", label: "Notas adicionales", tipo: "textarea", requerido: false, placeholder: "¿Alguna aclaración para el turno?" },
@@ -331,7 +347,7 @@ function StepDatos({ datos, onChange, camposExtra, isClient }) {
           fontSize: 13, color: "#4338ca", display: "flex", alignItems: "center", gap: 8,
         }}>
           <span>✓</span>
-          <span>Datos precargados de tu cuenta. Verificalos antes de confirmar.</span>
+          <span>Datos precargados de tu cuenta. Podés modificarlos desde "Mis Datos".</span>
         </div>
       )}
       <div className="form-campos">
@@ -437,9 +453,12 @@ export default function BookingFlow() {
   useEffect(() => {
     if (!user) return;
     authService.obtenerPerfil(user.uid).then(perfil => {
-      if (perfil?.telefono) {
-        setDatosCliente(d => ({ ...d, telefono: perfil.telefono }));
-      }
+      setDatosCliente(d => ({
+        ...d,
+        nombre: d.nombre || perfil?.nombre || user.displayName || "",
+        email:  d.email  || perfil?.email  || user.email || "",
+        ...(perfil?.telefono ? { telefono: perfil.telefono } : {}),
+      }));
     }).catch(() => {});
   }, [user?.uid]);
   const [turnoId, setTurnoId] = useState(null);

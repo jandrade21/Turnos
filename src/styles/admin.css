@@ -2,6 +2,11 @@
    ADMIN PANEL — Estilos del panel de administración
    ═══════════════════════════════════════════════════════ */
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .admin-root {
   min-height: 100vh;
   display: flex;

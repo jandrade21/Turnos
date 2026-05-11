@@ -13,7 +13,7 @@ import emailjs from "@emailjs/browser";
 const EMAILJS_CONFIG = {
   serviceId: "service_3upnsxe",      // ← Reemplazar
   templateConfirmId: "template_d4r6b0q", // ← Reemplazar
-  templateRecordId: "template_d4r6b0q",  // ← Reemplazar (opcional)
+  templateRecordId: "template_0qq34tz",  // ← Reemplazar (opcional)
   publicKey: "pYn0SKB7kXPH7EdE0",      // ← Reemplazar
 };
 
@@ -112,9 +112,10 @@ export async function enviarRecordatorio(turno, empresa) {
   };
 
   return emailjs.send(
-    EMAILJS_CONFIG.serviceId,
-    EMAILJS_CONFIG.templateRecordId,
-    params
+    import.meta.env.VITE_EMAILJS_SERVICE_ID,
+    import.meta.env.VITE_EMAILJS_TEMPLATE_RECORD_ID,
+    params,
+    import.meta.env.VITE_EMAILJS_PUBLIC_KEY
   );
 }
 

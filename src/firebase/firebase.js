@@ -7,6 +7,7 @@ import {
 import {
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   updateProfile, signOut, onAuthStateChanged, sendPasswordResetEmail,
+  reauthenticateWithCredential, EmailAuthProvider, updatePassword,
 } from "firebase/auth";
 
 // ─── CREDENCIALES — reemplazar por proyecto ───────────────
@@ -106,6 +107,14 @@ export const authService = {
   },
 
   onAuthChange: (callback) => onAuthStateChanged(auth, callback),
+
+  cambiarPassword: async (passwordActual, passwordNueva) => {
+    const usuario = auth.currentUser;
+    if (!usuario) throw new Error("No hay sesión activa.");
+    const credencial = EmailAuthProvider.credential(usuario.email, passwordActual);
+    await reauthenticateWithCredential(usuario, credencial);
+    await updatePassword(usuario, passwordNueva);
+  },
 };
 
 // ─── TURNOS SERVICE ───────────────────────────────────────

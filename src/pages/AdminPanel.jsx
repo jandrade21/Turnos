@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useApp } from "../App";
 import {
   turnosService, bloqueosService, profesionalesService, serviciosService,
   configuracionService, authService,
   hoyISO, sumarDias, getLunesDe, formatFechaLarga, formatFechaCorta,
 } from "../firebase/firebase";
+import { enviarRecordatorio } from "../integrations/emailjs";
 import Estadisticas from "./Estadisticas";
 import "../styles/admin.css";
 
@@ -1125,14 +1126,68 @@ function GestionServicios({ servicios, onRefresh }) {
 }
 
 // ─── ADMIN PANEL PRINCIPAL ────────────────────────────────
+// ── Helpers de recordatorio ───────────────────────────────
+function minutosHasta(horaISO) {
+  const [h, m] = horaISO.split(":").map(Number);
+  const now = new Date();
+  return (h * 60 + m) - (now.getHours() * 60 + now.getMinutes());
+}
+
 export default function AdminPanel() {
   const { empresa, user, navigate } = useApp();
   const [tab,          setTab]          = useState("agenda");
   const [menuAbierto,  setMenuAbierto]  = useState(false);
   const [profesionales, setProfesionales] = useState([]);
   const [servicios,     setServicios]     = useState([]);
+  const [recToast,      setRecToast]      = useState(null); // { count, nombres }
+  const recIntervalRef = useRef(null);
 
-  useEffect(() => { cargarProfs(); cargarServs(); }, []);
+  // ── Recordatorios automáticos ─────────────────────────
+  const verificarRecordatorios = useCallback(async () => {
+    if (!empresa?.notificaciones?.emailConfirmacion) return;
+    try {
+      const hoy = hoyISO();
+      const turnos = await turnosService.obtenerPorFecha(hoy);
+      const pendientes = turnos.filter(t =>
+        !t.recordatorioEnviado &&
+        t.estado !== "cancelado" &&
+        t.clienteEmail &&
+        (() => {
+          const diff = minutosHasta(t.horaInicio);
+          return diff >= 100 && diff <= 145; // ventana: entre 1h40m y 2h25m
+        })()
+      );
+
+      if (pendientes.length === 0) return;
+
+      const enviados = [];
+      for (const turno of pendientes) {
+        try {
+          await enviarRecordatorio(turno, empresa);
+          await turnosService.actualizar(turno.id, { recordatorioEnviado: true });
+          enviados.push(turno.clienteNombre);
+        } catch (err) {
+          console.warn("Recordatorio fallido para", turno.clienteNombre, err);
+        }
+      }
+
+      if (enviados.length > 0) {
+        setRecToast({ count: enviados.length, nombres: enviados.join(", ") });
+        setTimeout(() => setRecToast(null), 6000);
+      }
+    } catch (err) {
+      console.warn("verificarRecordatorios:", err);
+    }
+  }, [empresa]);
+
+  useEffect(() => {
+    cargarProfs();
+    cargarServs();
+    // Verificar al abrir el panel y cada 5 minutos
+    verificarRecordatorios();
+    recIntervalRef.current = setInterval(verificarRecordatorios, 5 * 60 * 1000);
+    return () => clearInterval(recIntervalRef.current);
+  }, [verificarRecordatorios]);
 
   async function cargarProfs() {
     try {
@@ -1187,6 +1242,28 @@ export default function AdminPanel() {
           <button className="btn-logout" onClick={() => authService.logout().then(() => navigate("booking"))}>Salir</button>
         </div>
       </header>
+
+      {/* Toast de recordatorios enviados */}
+      {recToast && (
+        <div style={{
+          position: "fixed", bottom: 24, right: 24, zIndex: 9999,
+          background: "#0f172a", border: "1px solid #10b981",
+          borderRadius: 12, padding: "14px 20px", boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
+          maxWidth: 340, animation: "fadeInUp .3s ease",
+        }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <span style={{ fontSize: 20 }}>✅</span>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: "#10b981", marginBottom: 4 }}>
+                {recToast.count} recordatorio{recToast.count > 1 ? "s" : ""} enviado{recToast.count > 1 ? "s" : ""}
+              </div>
+              <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.4 }}>
+                {recToast.nombres}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="admin-body">
         {menuAbierto && (

@@ -7,6 +7,7 @@ import LoginAdmin     from "./pages/LoginAdmin";
 import AuthCliente    from "./pages/AuthCliente";
 import MisTurnos      from "./pages/MisTurnos";
 import Setup          from "./pages/Setup";
+import Monitor        from "./pages/Monitor";
 
 export const AppContext = createContext(null);
 export const useApp = () => useContext(AppContext);
@@ -38,6 +39,7 @@ function getPage() {
   if (h.startsWith("#/mis-turnos")) return "mis-turnos";
   if (h.startsWith("#/auth"))       return "auth";
   if (h.startsWith("#/setup"))      return "setup";
+  if (h.startsWith("#/monitor"))   return "monitor";
   return "booking";
 }
 
@@ -92,6 +94,7 @@ export default function App() {
         {page === "login-admin" && <LoginAdmin />}
         {page === "admin"       && (isAdmin ? <AdminPanel /> : <LoginAdmin />)}
         {page === "setup"       && <Setup />}
+        {page === "monitor"     && (isAdmin ? <Monitor /> : <LoginAdmin />)}
       </div>
     </AppContext.Provider>
   );
